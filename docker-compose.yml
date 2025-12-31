@@ -1,24 +1,30 @@
+version: '3.9'
+
 services:
     # ---------- FRONTEND ----------
     frontend:
         build: ./frontend/table_booking
-        container_name: frontend
-        restart: always
+        volumes:
+            - ./frontend/table_booking:/app
+            - /app/node_modules
+        ports:
+            - '5173:5173'
+        depends_on:
+            - nginx
         networks:
             - table_booking
 
-    # ---------- USER SERVICE ----------
+    # ---------- AUTH SERVICE ----------
     auth-service:
         build: ./backend/apps/auth_service
+        container_name: auth-service
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend/apps/auth_service:/app
             - ./shared:/shared
-        container_name: auth-service
-        command: python manage.py runserver 0.0.0.0:8000
-        env_file:
-            - .env
+        env_file: .env
         environment:
-            PYTHONPATH: '/shared'
+            PYTHONPATH: /shared
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -27,177 +33,178 @@ services:
             REDIS_URL: redis://redis:6379/1
             RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
         depends_on:
-            - postgres
-            - redis
-            - rabbitmq
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         networks:
             - table_booking
 
-    # ---------- CATEGORY SERVICE ----------
+    # ---------- BILLING SERVICE ----------
     billing-service:
         build: ./backend/apps/billing_service
+        container_name: billing-service
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend/apps/billing_service:/app
             - ./shared:/shared
-        container_name: billing-service
-        command: python manage.py runserver 0.0.0.0:8000
-        env_file:
-            - .env
+        env_file: .env
         environment:
-            PYTHONPATH: '/shared'
+            PYTHONPATH: /shared
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
-            REDIS_URL: redis://redis:6379/1
+            REDIS_URL: redis://redis:6379/2
             RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
         depends_on:
-            - postgres
-            - redis
-            - rabbitmq
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         networks:
             - table_booking
 
-    # ---------- PRODUCT SERVICE ----------
+    # ---------- MENU SERVICE ----------
     menu-service:
         build: ./backend/apps/menu_service
+        container_name: menu-service
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend/apps/menu_service:/app
             - ./shared:/shared
-        container_name: menu-service
-        command: python manage.py runserver 0.0.0.0:8000
-        env_file:
-            - .env
+        env_file: .env
         environment:
-            PYTHONPATH: '/shared'
+            PYTHONPATH: /shared
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
-            REDIS_URL: redis://redis:6379/1
+            REDIS_URL: redis://redis:6379/3
             RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
         depends_on:
-            - postgres
-            - redis
-            - rabbitmq
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         networks:
             - table_booking
-
-    # ---------- ORDER SERVICE ----------
+        # ---------- MENU SERVICE ----------
     notification-service:
         build: ./backend/apps/notification_service
+        container_name: notification-service
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend/apps/notification_service:/app
             - ./shared:/shared
-        container_name: notification-service
-        command: python manage.py runserver 0.0.0.0:8000
-        env_file:
-            - .env
+        env_file: .env
         environment:
-            PYTHONPATH: '/shared'
+            PYTHONPATH: /shared
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
-            REDIS_URL: redis://redis:6379/1
+            REDIS_URL: redis://redis:6379/3
             RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
         depends_on:
-            - postgres
-            - redis
-            - rabbitmq
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         networks:
             - table_booking
-
-    # ---------- PAYMENT SERVICE ----------
+    # ---------- ORDER SERVICE ----------
     order-service:
         build: ./backend/apps/order_service
+        container_name: order-service
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend/apps/order_service:/app
             - ./shared:/shared
-        container_name: order-service
-        command: python manage.py runserver 0.0.0.0:8000
-        env_file:
-            - .env
+        env_file: .env
         environment:
-            PYTHONPATH: '/shared'
+            PYTHONPATH: /shared
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
-            REDIS_URL: redis://redis:6379/1
+            REDIS_URL: redis://redis:6379/4
             RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
         depends_on:
-            - postgres
-            - redis
-            - rabbitmq
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         networks:
             - table_booking
 
-    # ---------- CART SERVICE ----------
+    # ---------- TABLE SERVICE ----------
     table-service:
         build: ./backend/apps/table_service
+        container_name: table-service
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend/apps/table_service:/app
             - ./shared:/shared
-        container_name: table-service
-        command: python manage.py runserver 0.0.0.0:8000
-        env_file:
-            - .env
+        env_file: .env
         environment:
-            PYTHONPATH: '/shared'
+            PYTHONPATH: /shared
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
-            REDIS_URL: redis://redis:6379/1
+            REDIS_URL: redis://redis:6379/5
             RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
         depends_on:
-            - postgres
-            - redis
-            - rabbitmq
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         networks:
             - table_booking
 
-    # ---------- DATABASE ----------
+    # ---------- POSTGRES ----------
     postgres:
         image: postgres:17
         container_name: postgres
         restart: always
         environment:
-            POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
         volumes:
             - postgres_data:/var/lib/postgresql/data
-        networks:
-            - table_booking
         ports:
             - '5432:5432'
         healthcheck:
-            test:
-                [
-                    'CMD-SHELL',
-                    'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}',
-                ]
+            test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
             interval: 10s
             timeout: 5s
             retries: 5
+        networks:
+            - table_booking
 
-    # ---------- CACHE ----------
+    # ---------- REDIS ----------
     redis:
         image: redis:7-alpine
         container_name: redis
-        restart: always
         command: ['redis-server', '--appendonly', 'yes']
-        ports:
-            - '6379:6379'
-        networks:
-            - table_booking
         volumes:
             - redis_data:/data
         healthcheck:
@@ -205,20 +212,18 @@ services:
             interval: 5s
             timeout: 3s
             retries: 5
+        networks:
+            - table_booking
 
-    # ---------- MESSAGE QUEUE ----------
+    # ---------- RABBITMQ ----------
     rabbitmq:
         image: rabbitmq:3-management
         container_name: rabbitmq
-        restart: always
-        ports:
-            - '5672:5672'
-            - '15672:15672'
-        networks:
-            - table_booking
         environment:
-            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
-            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+        ports:
+            - '15672:15672'
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
         healthcheck:
@@ -226,17 +231,18 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+        networks:
+            - table_booking
 
-    # ---------- REVERSE PROXY ----------
+    # ---------- NGINX ----------
     nginx:
-        image: nginx:latest
+        image: nginx:alpine
         container_name: nginx
         ports:
             - '80:80'
         volumes:
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
         depends_on:
-            - frontend
             - auth-service
             - table-service
             - menu-service

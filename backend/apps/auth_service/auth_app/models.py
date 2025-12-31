@@ -23,7 +23,7 @@ class UserManager(BaseUserManager):
         username,
         email,
         phone_number,
-        role=2,
+        role=1,
         address=None,
         password=None,
         status=1,
@@ -63,8 +63,9 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     class Role(models.IntegerChoices):
         ADMIN = 1, "Admin"
-        CUSTOMER = 2, "Customer"
-        SELLER = 3, "Seller"
+        MANAGER = 2, "manager"
+        WAITER = 3, "waiter"
+        CAISHER = 4, "caisher"
 
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)

@@ -14,7 +14,7 @@ export default function LoginPage() {
         try {
             const res = await loginApi(form);
             await loginUser(res.data.access);
-            navigate('/tables');
+            navigate('/dashboard');
         } catch {
             setError('Invalid email or password');
         }

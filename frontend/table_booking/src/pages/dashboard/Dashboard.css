@@ -1,0 +1,134 @@
+* {
+    box-sizing: border-box;
+}
+
+.app-layout {
+    display: flex;
+    height: 100vh;
+    font-family: system-ui, sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    background: #0f172a;
+    color: #cbd5f5;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.app-icon {
+    background: #2563eb;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-name {
+    font-weight: 600;
+    color: white;
+}
+
+.app-sub {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* MENU ITEMS */
+.sidebar-item {
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-item:hover {
+    background: #1e293b;
+    color: white;
+}
+
+.sidebar-item.active {
+    background: #2563eb;
+    color: white;
+}
+
+.parent {
+    font-weight: 500;
+}
+
+.arrow {
+    font-size: 12px;
+}
+
+/* CHILDREN */
+.sidebar-children {
+    margin-left: 12px;
+    margin-top: 4px;
+}
+
+.sidebar-children .sidebar-item {
+    font-size: 13px;
+}
+
+/* DIVIDER */
+.sidebar-divider {
+    height: 1px;
+    background: #1e293b;
+    margin: 16px 0;
+}
+
+/* MAIN */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+}
+
+/* TOP BAR */
+.topbar {
+    height: 56px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-title {
+    font-weight: 600;
+}
+
+.logout-btn {
+    background: #ef4444;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+/* CONTENT */
+.content {
+    padding: 24px;
+}

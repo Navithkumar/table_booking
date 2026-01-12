@@ -8,6 +8,7 @@ def validate_bcrypt_length(password: str) -> str:
 
 
 class RegisterSchema(BaseModel):
+    role: int | None
     email: EmailStr
     name: str
     password: str = Field(min_length=8)
